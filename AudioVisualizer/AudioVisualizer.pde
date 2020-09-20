@@ -3,7 +3,7 @@ import android.media.audiofx.Visualizer;
 Visualizer vis;
 int captureRate;
 Band[] bands = new Band[512];
-int bassRange = 20;
+int bassRange = 13;
 byte[] bassValues = new byte[bassRange];
 float scoreLow = 0;
 float r = 0;
@@ -38,8 +38,9 @@ private static void precomputeVolumeNormLUT() {
         double v = s-MAX_NEGATIVE_AMPLITUDE;
         double sign = Math.signum(v);
         // Non-linear volume boost function
-        // fitted exponential 
-        VOLUME_NORM_LUT[s]=(short)(sign*33716.25 + (-2.031244e-12 - 33716.25)/Math.pow(1 + (v/6049.125),2.096174));
+        // fitted exponential through (0,0), (10000, 25000), (32767, 32767)
+        VOLUME_NORM_LUT[s]=(short)(sign*(1.240769e-22 - (-4.66022/0.0001408133)*
+                           (1 - Math.exp(-0.0001408133*v*sign))));
     }
 }
 
@@ -68,9 +69,8 @@ void setup() {
     public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate)
     {
       normalizeVolume(bytes, 0, 1023);
-      
       for(int i = 0; i < bytes.length; i++)
-        bytes[i] /= 7;
+        bytes[i] /= 10;
         
       for (int i = 0; i < bands.length; i++) {
         bands[i].addValue(bytes[i]);
@@ -95,8 +95,8 @@ void draw() {
     scoreLow += Math.abs(bassValues[i]);
   }
   scoreLow /= bassRange;
-  scoreLow *= 2;
-  r = lerp(r, 250+scoreLow, 0.7);
+  scoreLow *= 3;
+  r = lerp(r, 250+scoreLow, 0.4);
   if (c > 255) {
     c=0;
   }
