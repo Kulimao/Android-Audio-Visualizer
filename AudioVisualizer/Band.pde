@@ -1,19 +1,18 @@
 class Band{
   
-  private byte value;
-  private byte target;
+  private float value;
+  private float target;
   
-  public byte getValue(){
-    return target;
+  public float getValue(){
+    return value;
   }
   
-  public void addValue(byte value){
-    this.target += value;
+  public void setTarget(float target){
+    this.target = target;
   }
   
   public void lerpValue(){
-    value = (byte)lerp(value, target, 0.4);
-    target = (byte)lerp(target, 0, 0.05);
+    value = lerp(value, target, 0.2);
   }
   
 }
