@@ -33,8 +33,8 @@ void setup() {
       public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate)
     {
       println(log10(Math.abs(bytes[0])+1)*100f);
-      for (int i = 0; i < bands.length; i++) {
-        bands[i].setTarget(log10(Math.abs(bytes[i])+1)*100f);
+      for (int i = 0; i < bands.length; i+=2) {
+        bands[i].setTarget(((int)sqrt((float)(log10(bytes[i+1]) + log10(bytes[i]))))*100f);
         if (i < bassRange) {
           scoreLow = 0;
           //scoreLow += bytes[i];
